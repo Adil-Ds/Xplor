@@ -12,10 +12,10 @@
 
 | Name | ID | GitHub | Role |
 |---|---|---|---|
-| Mareeha Nadeem | DS-33 | @mareeha | AI Models Lead |
-| Laiba Shahid | DS-17 | @laiba | Backend Lead |
-| Nabiha Saqib | DS-30 | @nabiha | Frontend Lead |
-| Mahnoor Amir | DS-14 | @mahnoor | Security Lead |
+| Muhammad Adil | DS-27 | @Adil-Ds | AI Models Lead |
+| Muaz Islam | DS-23 | @muaz | Backend Lead |
+| Muhammad Arslan | DS-15 | @Arslan | Security Lead |
+| Sharjeel Anjum | DS-04 | @Sharjeel | Frontend Lead |
 
 ## 🔀 Branch Strategy
 
@@ -23,10 +23,10 @@
 |---|---|
 | `main` | Production-ready, protected |
 | `dev` | Integration branch |
-| `feature/ai-models` | Mareeha's AI work |
-| `feature/backend` | Laiba's backend |
-| `feature/frontend` | Nabiha's frontend |
-| `feature/security` | Mahnoor's security |
+| `feature/ai-models` | Adil's AI work |
+| `feature/backend` | Muaz's backend |
+| `feature/frontend` | Sharjeel's frontend |
+| `feature/security` | Arslan's security |
 
 ## 🚀 Quick Start
 
