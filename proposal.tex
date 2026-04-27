@@ -1,0 +1,241 @@
+\documentclass[10pt,twocolumn]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[margin=0.65in, top=0.6in, bottom=0.6in]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% ── Colors ────────────────────────────────────────────────────────────────────
+\definecolor{primary}{HTML}{1a1a2e}
+\definecolor{accent}{HTML}{0f3460}
+\definecolor{highlight}{HTML}{16213e}
+\definecolor{lightgray}{HTML}{f0f0f0}
+\definecolor{darkblue}{HTML}{0f3460}
+
+% ── Section Formatting ────────────────────────────────────────────────────────
+\titleformat{\section}{\large\bfseries\color{darkblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{accent}}{}{0em}{}
+\titlespacing*{\section}{0pt}{6pt}{3pt}
+\titlespacing*{\subsection}{0pt}{4pt}{2pt}
+
+% ── List Spacing ──────────────────────────────────────────────────────────────
+\setlist[itemize]{noitemsep, topsep=2pt, leftmargin=*}
+\setlist[enumerate]{noitemsep, topsep=2pt, leftmargin=*}
+
+% ── Hyperlink Setup ───────────────────────────────────────────────────────────
+\hypersetup{colorlinks=true, linkcolor=darkblue, urlcolor=darkblue}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ── Title Block ───────────────────────────────────────────────────────────────
+\twocolumn[{%
+\begin{center}
+  {\LARGE\bfseries\color{primary} AI-Powered Secure Data Analyzer}\\[4pt]
+  {\large Intelligent Analytics Platform with Built-in Cybersecurity \& Trained AI Models}\\[6pt]
+  {\normalsize
+    Mareeha Nadeem (DS-33)\enspace\textbullet\enspace
+    Laiba Shahid (DS-17)\enspace\textbullet\enspace
+    Nabiha Saqib (DS-30)\enspace\textbullet\enspace
+    Mahnoor Amir (DS-14)
+  }\\[2pt]
+  \textit{\small Department of Data Science \textbullet{} [University Name] \textbullet{} April 2026}
+\end{center}
+\vspace{4pt}
+\hrule height 1.2pt
+\vspace{6pt}
+}]
+
+% ── 0. Motivation ────────────────────────────────────────────────────────────
+\section{0. Motivation}
+
+Every organization today has data — but most cannot read it. Existing analytics
+tools like Power~BI and Tableau are powerful yet require expert training, cost
+thousands in licensing, and ship with \textbf{zero security intelligence}.
+Simultaneously, cybersecurity tools exist in isolation — divorced from the data
+they are meant to protect. As a student team from the Department of Data Science,
+we are motivated to bridge this gap by building a \textit{single, free, accessible
+platform} that lets any user analyze their data visually, query it in plain English,
+forecast future trends, and receive real-time security feedback — all without
+needing a specialist.
+
+% ── 1. Problem Statement ───────────────────────────────────────────────────────
+\section{1. Problem Statement}
+
+Organizations generate massive volumes of data yet face two simultaneous crises:
+\textbf{(1)} they cannot understand their own data without expert analysts, and
+\textbf{(2)} their analytics platforms are insecure. Existing tools like Power~BI,
+Tableau, and Grafana offer \textit{zero} built-in security intelligence and require
+specialist knowledge. Data breaches currently cost enterprises an average of
+\textbf{\$4.88 million} per incident (IBM, 2024) while $\sim$1.4 million analyst
+roles remain unfilled globally. No unified platform combines self-service analytics,
+custom-trained AI models, real-time live dashboards, manual graph builders, and
+proactive cybersecurity in a single accessible tool.
+
+% ── 2. Dataset ────────────────────────────────────────────────────────────────
+\section{2. Dataset Strategy}
+
+No single dataset is used. Each of four custom models is trained on a dedicated
+source. The \textbf{Risk Scoring Regressor} uses a \textit{self-generated} labeled
+dataset derived automatically from every file uploaded to the platform:
+
+\begin{center}
+\small
+\begin{tabularx}{\columnwidth}{@{}l X@{}}
+\toprule
+\textbf{Model} & \textbf{Training Data} \\
+\midrule
+Anomaly Detection (IF + LSTM) & KDD Cup '99 / NSL-KDD \\
+Data Quality Classifier (distilBERT) & Synthetic dirty/clean row pairs \\
+NL Query Model (T5-small) & WikiSQL + Spider (200K+ examples) \\
+Risk Score Regressor (XGBoost) & Custom-labeled per-file features \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent The risk scoring pipeline runs automatically on every upload: Presidio
+extracts PII density, Isolation Forest outputs an anomaly score, and missing-value
+ratios are computed — producing a fully labeled training record with zero manual effort.
+
+% ── 3. Proposed Solution ──────────────────────────────────────────────────────
+\section{3. Proposed Solution}
+
+\subsection{Phase 1 — Build, Train, Analyze}
+
+The user uploads a CSV/Excel file. The platform then:
+
+\begin{enumerate}
+  \item \textbf{Auto-profiles} every column (types, nulls, distributions) via \texttt{ydata-profiling}.
+  \item \textbf{AI Data Cleaning:} Our fine-tuned \texttt{distilBERT} classifies each row
+        as \textit{clean} or \textit{dirty}; an LLM generates a human-readable fix suggestion.
+        Users accept/reject via a Human-in-the-Loop interface.
+  \item \textbf{Live Dashboard:} An auto-updating dashboard refreshes visualizations
+        in real-time as data changes or new rows are added — powered by WebSockets
+        and server-sent events, similar to live Grafana panels.
+  \item \textbf{Manual Graph Builder:} A drag-and-drop chart studio (like Power~BI)
+        lets users pick any column as X/Y axis, choose chart type (bar, line, scatter,
+        pie, heatmap), apply filters, and pin charts to their personal dashboard.
+        Each graph is dataset-specific and persisted per user session.
+  \item \textbf{Natural Language Query:} Fine-tuned T5-small converts plain-English
+        questions into \texttt{pandas}/SQL, returning an interactive chart.
+  \item \textbf{Forecasting:} Prophet (time-series) and LightGBM (non-linear) predict
+        future trends with confidence intervals.
+  \item \textbf{Security Engine:} Isolation Forest flags anomalous upload behavior; an
+        LSTM Autoencoder detects unusual sequential access patterns.
+  \item \textbf{Risk Scoring:} XGBoost produces a 0--100 risk score per file (PII
+        density + anomaly count + missing ratio).
+\end{enumerate}
+
+\subsection{Phase 2 — Security Hardening \& Model Self-Improvement}
+
+\begin{itemize}
+  \item \textbf{MFA + RBAC:} Firebase TOTP multi-factor authentication; three roles
+        (Admin / Analyst / Viewer) with least-privilege enforcement.
+  \item \textbf{AES-256 Encryption:} All files encrypted at rest; all traffic over TLS~1.3.
+  \item \textbf{Prompt Injection Guard:} Input sanitization layer + LLM guardrails
+        prevent adversarial hijacking of the AI pipeline.
+  \item \textbf{Model Self-Improvement:} Every 100 new uploads trigger automatic
+        re-training; models are versioned and promoted only if F1/AUC improve.
+  \item \textbf{Audit Logs:} Every AI decision is logged with reasoning —
+        \textit{``Row 42 deleted — 3 required fields missing (confidence: 94\%)''.}
+\end{itemize}
+
+% ── 4. Hardware Specs for Training ───────────────────────────────────────────
+\section{4. Hardware for Training}
+
+\begin{center}
+\small
+\begin{tabularx}{\columnwidth}{@{}l X@{}}
+\toprule
+\textbf{Model} & \textbf{Hardware Used} \\
+\midrule
+distilBERT (data quality)   & Google Colab T4 GPU (16 GB VRAM) \\
+T5-small (NL query)         & Google Colab T4 GPU (16 GB VRAM) \\
+LSTM Autoencoder            & Google Colab T4 GPU \\
+XGBoost / Isolation Forest  & Local CPU (Intel Core i5, 8 GB RAM) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% ── 5. Deliverables ───────────────────────────────────────────────────────────
+\section{5. Deliverables}
+
+\textbf{Phase 1:} (1) Full-stack web app (React + FastAPI); (2) four trained AI
+models with Jupyter notebooks and evaluation metrics (F1, AUC, RMSE, BLEU);
+(3) \textbf{live auto-updating dashboard}; (4) \textbf{manual drag-and-drop graph
+builder} (Power~BI-style, dataset-specific); (5) NL query interface;
+(6) AI data cleaning pipeline; (7) forecasting module; (8) 0--100 risk score engine.
+
+\textbf{Phase 2:} (1) MFA + RBAC + AES-256 fully integrated; (2) model
+self-improvement pipeline with automated retraining; (3) prompt injection
+prevention; (4) one-click PDF report export; (5) Phase~1 vs Phase~2 metrics
+comparison table; (6) live viva demo — upload $\to$ clean $\to$ build charts
+$\to$ risk score, end-to-end.
+
+% ── 6. Tools & Technologies ───────────────────────────────────────────────────
+\section{6. Tools \& Technologies}
+
+\begin{center}
+\small
+\begin{tabularx}{\columnwidth}{@{}l X@{}}
+\toprule
+\textbf{Layer} & \textbf{Technology} \\
+\midrule
+Frontend        & React 18, Plotly.js, Monaco Editor \\
+Backend         & FastAPI, Python 3.11, Uvicorn \\
+Custom AI       & scikit-learn, HuggingFace Transformers, PyTorch, XGBoost \\
+LLM (API)       & Google Gemini 2.0 Flash \\
+Data            & pandas, numpy, scipy, ydata-profiling, Prophet \\
+Security        & cryptography (AES-256), Presidio, Pyodide (WASM) \\
+Auth \& DB      & Firebase Auth (MFA), Firestore \\
+Deployment      & Vercel (frontend) · Render / Railway (backend) \\
+Dev Tools       & Jupyter Notebook, Git \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% ── 7. Timeline ───────────────────────────────────────────────────────────────
+\section{7. Timeline (12 Weeks)}
+
+\begin{center}
+\small
+\begin{tabularx}{\columnwidth}{@{}c l X@{}}
+\toprule
+\textbf{Wks} & \textbf{Phase} & \textbf{Deliverables} \\
+\midrule
+1--3  & Foundation       & File upload, auth, basic dashboard \\
+4--6  & Model Training   & 4 trained models, evaluation notebooks \\
+7--8  & NL + Forecasting & NL-to-chart pipeline, Prophet forecasts \\
+9--10 & Security + Editor & Threat scoring, risk engine, code editor \\
+11--12 & Integration     & E2E testing, demo video, documentation \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% ── 8. Innovation ─────────────────────────────────────────────────────────────
+\section{8. Innovation \& Differentiation}
+
+This is the only student project combining: \textbf{self-trained anomaly detection
++ fine-tuned NLP models + live real-time BI dashboard + Power~BI-style manual
+graph builder + cybersecurity hardening} in one coherent, deployable platform.
+It rivals commercial tools (Power~BI, Tableau) at \$0 operational cost while
+delivering features those tools lack entirely: PII protection, real-time risk
+scoring, dataset-specific pinnable charts, WebSocket-powered live updates, and
+explainable AI decisions.
+
+\vspace{4pt}
+\noindent\textit{Submitted for Supervisor Review and Approval.}
+
+\end{document}

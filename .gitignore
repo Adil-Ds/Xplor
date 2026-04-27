@@ -1,0 +1,57 @@
+# ── Python ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.spec
+venv/
+.venv/
+env/
+.env
+*.env
+
+# ── Jupyter ──────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoint
+
+# ── AI Models / Data ─────────────────────────
+ai-models/data/raw/
+ai-models/data/processed/
+ai-models/models/*.pkl
+ai-models/models/*.pt
+ai-models/models/*.bin
+*.csv
+*.xlsx
+*.parquet
+
+# ── Node / React ─────────────────────────────
+node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# ── IDEs ─────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Secrets / Keys ───────────────────────────
+.env*
+*.pem
+*.key
+*.crt
+firebase-adminsdk*.json
+service-account*.json
+secrets/
+
+# ── Deployment ───────────────────────────────
+deployment/.env
+*.log
+logs/
