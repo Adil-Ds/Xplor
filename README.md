@@ -15,7 +15,7 @@
 | Muhammad Adil | DS-27 | @Adil-Ds | AI Models Lead |
 | Muaz Islam | DS-23 | @muaz | Backend Lead |
 | Muhammad Arslan | DS-15 | @Arslan | Security Lead |
-| Sharjeel Anjum | DS-04 | @Sharjeel | Frontend Lead |
+| sharjeel Anjum | DS-04 | @Sharjeel | Frontend Lead |
 
 ## 🔀 Branch Strategy
 
