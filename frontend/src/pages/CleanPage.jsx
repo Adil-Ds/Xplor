@@ -6,47 +6,127 @@ import { ChevronLeft, Zap, CheckCircle, XCircle, Loader2, Sparkles, Wand2, Recei
 import toast from 'react-hot-toast'
 import api from '../api/client'
 
-/* ─── Apply steps to data (in-browser) ─────────────── */
+/* ─── Apply steps to data (in-browser preview) ──────── */
 function applySteps(data, recipe) {
   let rows = data.map((r) => ({ ...r }))
 
   for (const step of recipe) {
-    switch (step.op) {
-      case 'drop_column': {
-        rows = rows.map((r) => { const nr={...r}; delete nr[step.column]; return nr })
-        break
+    try {
+      switch (step.op) {
+
+        case 'drop_column': {
+          rows = rows.map((r) => { const nr = { ...r }; delete nr[step.column]; return nr })
+          break
+        }
+
+        case 'rename_column': {
+          rows = rows.map((r) => {
+            const nr = { ...r }
+            nr[step.newName] = nr[step.oldName]
+            delete nr[step.oldName]
+            return nr
+          })
+          break
+        }
+
+        case 'fill_null': {
+          const { column, fillWith, fillValue } = step
+          let fill = fillValue ?? ''
+          if (fillWith === 'mean') {
+            const nums = rows.map(r => Number(r[column])).filter(v => !isNaN(v))
+            fill = nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0
+          } else if (fillWith === 'median') {
+            const nums = rows.map(r => Number(r[column])).filter(v => !isNaN(v)).sort((a, b) => a - b)
+            fill = nums.length ? nums[Math.floor(nums.length / 2)] : 0
+          } else if (fillWith === 'mode') {
+            const freq = {}
+            rows.forEach(r => { const v = String(r[column] ?? ''); freq[v] = (freq[v] || 0) + 1 })
+            fill = Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] ?? ''
+          }
+          rows = rows.map(r => ({
+            ...r,
+            [column]: (r[column] === null || r[column] === undefined || r[column] === '') ? fill : r[column],
+          }))
+          break
+        }
+
+        case 'drop_nulls': {
+          const cols = step.columns || Object.keys(rows[0] || {})
+          rows = rows.filter(r => cols.every(c => r[c] !== null && r[c] !== undefined && r[c] !== ''))
+          break
+        }
+
+        case 'drop_duplicates': {
+          const cols = step.columns || Object.keys(rows[0] || {})
+          const seen = new Set()
+          rows = rows.filter(r => {
+            const key = cols.map(c => String(r[c] ?? '')).join('\x00')
+            if (seen.has(key)) return false
+            seen.add(key)
+            return true
+          })
+          break
+        }
+
+        case 'cast_type': {
+          const { column, toType } = step
+          rows = rows.map(r => {
+            let v = r[column]
+            if (toType === 'number') v = isNaN(Number(v)) ? null : Number(v)
+            else if (toType === 'string') v = String(v ?? '')
+            else if (toType === 'date') { const d = new Date(v); v = isNaN(d.getTime()) ? v : d.toISOString().split('T')[0] }
+            return { ...r, [column]: v }
+          })
+          break
+        }
+
+        case 'lowercase': {
+          rows = rows.map(r => ({ ...r, [step.column]: String(r[step.column] ?? '').toLowerCase() }))
+          break
+        }
+
+        case 'uppercase': {
+          rows = rows.map(r => ({ ...r, [step.column]: String(r[step.column] ?? '').toUpperCase() }))
+          break
+        }
+
+        case 'trim_strings': {
+          rows = rows.map(r => ({ ...r, [step.column]: String(r[step.column] ?? '').trim() }))
+          break
+        }
+
+        case 'replace_value': {
+          rows = rows.map(r => ({
+            ...r,
+            [step.column]: String(r[step.column] ?? '').split(step.findVal || '').join(step.replaceVal || ''),
+          }))
+          break
+        }
+
+        case 'filter_rows': {
+          const { column, operator = '=', value = '' } = step
+          if (!column) break
+          rows = rows.filter(r => {
+            const sv = String(r[column] ?? '')
+            const nv = Number(r[column])
+            switch (operator) {
+              case '=':        return sv === String(value)
+              case '!=':       return sv !== String(value)
+              case '>':        return !isNaN(nv) && nv > Number(value)
+              case '<':        return !isNaN(nv) && nv < Number(value)
+              case '>=':       return !isNaN(nv) && nv >= Number(value)
+              case '<=':       return !isNaN(nv) && nv <= Number(value)
+              case 'contains': return sv.toLowerCase().includes(String(value).toLowerCase())
+              default:         return true
+            }
+          })
+          break
+        }
+
+        default: break
       }
-      case 'rename_column': {
-        const { oldName, newName } = step
-        rows = rows.map((r) => {
-          const nr = { ...r }; nr[newName] = nr[oldName]; delete nr[oldName]; return nr
-        })
-        break
-      }
-      case 'fill_null': {
-        const { column, fillValue } = step
-        rows = rows.map((r) => ({
-          ...r,
-          [column]: (r[column] === null || r[column] === undefined || r[column] === '') ? fillValue : r[column],
-        }))
-        break
-      }
-      case 'cast_type': {
-        const { column, toType } = step
-        rows = rows.map((r) => {
-          let v = r[column]
-          if (toType === 'number') v = isNaN(Number(v)) ? null : Number(v)
-          if (toType === 'string') v = String(v ?? '')
-          if (toType === 'date')   v = new Date(v).toISOString().split('T')[0]
-          return { ...r, [column]: v }
-        })
-        break
-      }
-      case 'winsorize': {
-        // Mock outlier clipping
-        break
-      }
-      default: break
+    } catch (e) {
+      console.warn(`[clean] step '${step.op}' failed:`, e)
     }
   }
   return rows
@@ -66,31 +146,35 @@ export default function CleanPage() {
     let mounted = true
     async function fetchSuggestions() {
       try {
-        const res = await api.get(`/api/explore/${id}/suggestions`)
+        const res = await api.get(`/explore/${id}/suggestions`)
         if (mounted && res.data?.suggestions) {
-          const mapped = res.data.suggestions.map(s => {
-             let severity = 'INFO'
-             let severityColor = 'indigo'
-             let icon = 'info'
-             if (s.impact === 'high') { severity = 'HIGH SEVERITY'; severityColor = 'rose'; icon = 'alert-triangle'; }
-             else if (s.impact === 'medium') { severity = 'SUGGESTION'; severityColor = 'amber'; icon = 'sparkles'; }
-             else if (s.impact === 'low') { severityColor = 'emerald'; icon = 'check-circle'; }
-             
-             return {
-               id: s.id,
-               title: s.title || s.column || 'Dataset Issue',
-               desc: s.desc || s.text,
-               severity,
-               severityColor,
-               icon,
-               action: s.action || { op: 'custom_fix' },
-               btnLabel: s.action?.op ? s.action.op.replace('_', ' ').toUpperCase() : 'APPLY FIX'
-             }
-           })
-           setSuggestions(mapped)
+          const mapped = res.data.suggestions
+            .filter(s => s.action)  // only show suggestions with an actionable fix
+            .map(s => {
+              let severity = 'INFO'
+              let severityColor = 'indigo'
+              if (s.impact === 'high')   { severity = 'HIGH SEVERITY'; severityColor = 'rose' }
+              else if (s.impact === 'medium') { severity = 'SUGGESTION'; severityColor = 'amber' }
+              else if (s.impact === 'low')    { severity = 'LOW IMPACT'; severityColor = 'emerald' }
+
+              const opLabel = s.action?.op
+                ? s.action.op.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                : 'Apply Fix'
+
+              return {
+                id:           s.id,
+                title:        s.column || 'Dataset',
+                desc:         s.text,
+                severity,
+                severityColor,
+                action:       s.action,
+                btnLabel:     opLabel,
+              }
+            })
+          setSuggestions(mapped)
         }
       } catch (e) {
-        console.error("Failed to load suggestions:", e)
+        console.error('Failed to load AI suggestions:', e)
       } finally {
         if (mounted) setIsLoadingSugg(false)
       }

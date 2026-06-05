@@ -155,3 +155,24 @@ def query(ds_id: str, body: dict, db: Session = Depends(get_db), current=Depends
         return {"rows": result.replace({np.nan:None}).to_dict(orient="records"), "columns": list(result.columns)}
 
     return {"rows": df.head(200).replace({np.nan:None}).to_dict(orient="records"), "columns": list(df.columns)}
+
+@router.get("/{ds_id}/narrative")
+def narrative(ds_id: str, model: str = None, provider: str = "auto",
+              db: Session = Depends(get_db), current=Depends(get_current_user)):
+    """
+    Generate an AI business narrative/insight summary.
+    Pass ?provider=ollama|groq|auto to choose the LLM backend.
+    """
+    from app.services.chat_service import generate_insights
+    df = load_df(ds_id, current["sub"], db)
+
+    try:
+        text = generate_insights(df, model=model, provider=provider)
+        return {"narrative": text}
+    except RuntimeError as e:
+        msg = str(e)
+        if "timed out" in msg.lower():
+            raise HTTPException(504, msg)
+        if "not running" in msg.lower():
+            raise HTTPException(503, msg)
+        raise HTTPException(500, f"Failed to generate narrative: {msg}")

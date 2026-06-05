@@ -1,0 +1,43 @@
+{
+  "dataset": "Real column names from public ML datasets (Titanic, UCI Adult, etc.)",
+  "dataset_size": 420,
+  "num_classes": 10,
+  "baseline": {
+    "model": "typeform/distilbert-base-uncased-mnli (zero-shot)",
+    "accuracy_pct": 60.71,
+    "macro_f1_pct": 56.99,
+    "per_class_f1": {
+      "email": 100.0,
+      "phone": 87.5,
+      "name": 66.7,
+      "date": 85.7,
+      "currency": 63.6,
+      "id": 84.2,
+      "address": 64.0,
+      "percentage": 18.2,
+      "numeric": 0.0,
+      "text": 0.0
+    }
+  },
+  "finetuned": {
+    "model": "distilbert-base-uncased (fine-tuned, 5 epochs)",
+    "accuracy_pct": 75.0,
+    "macro_f1_pct": 74.4,
+    "per_class_f1": {
+      "email": 84.2,
+      "phone": 93.3,
+      "name": 71.4,
+      "date": 85.7,
+      "currency": 84.2,
+      "id": 94.7,
+      "address": 58.8,
+      "percentage": 84.2,
+      "numeric": 42.9,
+      "text": 44.4
+    }
+  },
+  "improvement": {
+    "accuracy_pp": 14.29,
+    "f1_pp": 17.41
+  }
+}

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   MessageSquare, Send, ChevronLeft, Zap, Database,
@@ -87,18 +87,32 @@ function CodeBlock({ code }) {
   )
 }
 
+/* ─── Elapsed timer shown while AI is loading ─── */
+function ElapsedTimer() {
+  const [secs, setSecs] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setSecs(s => s + 1), 1000)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <span className="text-[11px] font-mono text-cyan-400/60 ml-1">
+      {secs}s
+    </span>
+  )
+}
+
 /* ─── Message bubble ─── */
-function Message({ msg }) {
+function Message({ msg, modelName }) {
   const isUser = msg.role === 'user'
   return (
     <div className={`flex w-full mb-6 ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`flex gap-4 max-w-[85%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-        
+
         {/* Avatar */}
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg ${isUser ? 'bg-primary text-on-primary' : 'bg-surface-container border border-outline-variant/20 text-cyan-400'}`}>
           {isUser ? <User size={20} /> : <Bot size={20} />}
         </div>
-        
+
         {/* Content */}
         <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
           {isUser ? (
@@ -110,7 +124,8 @@ function Message({ msg }) {
               {msg.loading ? (
                 <div className="flex items-center gap-3 text-cyan-400 font-medium">
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Qwen 2.5 is thinking…</span>
+                  <span>{modelName} is thinking…</span>
+                  <ElapsedTimer />
                 </div>
               ) : (
                 <>
@@ -132,7 +147,7 @@ function OllamaStatus({ status }) {
   return (
     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border shadow-sm ${status.running ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'}`}>
       {status.running
-        ? <><Wifi size={14} /> <span className="text-[11px] font-bold uppercase tracking-wider">Ollama {status.qwen_available ? '· Qwen Ready' : '· No Qwen'}</span></>
+        ? <><Wifi size={14} /> <span className="text-[11px] font-bold uppercase tracking-wider">Ollama · {status.models?.[0] ?? 'Ready'}</span></>
         : <><WifiOff size={14} /> <span className="text-[11px] font-bold uppercase tracking-wider">Ollama Offline</span></>
       }
     </div>
@@ -185,16 +200,35 @@ export default function ChatPage() {
     setMessages(prev => [...prev, userMsg, aiMsg])
 
     try {
-      const res = await api.post(`/chat/${id}`, { question: q })
-      const data = res.data
+      // Use a 200 s timeout — LLM inference can be slow on first load
+      const res = await api.post(`/chat/${id}`, { question: q }, { timeout: 200_000 })
       setMessages(prev =>
-        prev.map(m => m.id === aiMsg.id ? { ...m, loading: false, result: data } : m)
+        prev.map(m => m.id === aiMsg.id ? { ...m, loading: false, result: res.data } : m)
       )
     } catch (err) {
+      const httpStatus = err.response?.status
+      const detail     = err.response?.data?.detail || ''
+      const isTimeout  = err.code === 'ECONNABORTED' || err.message?.toLowerCase().includes('timeout')
+
+      const errorValue =
+        isTimeout
+          ? `Ollama took too long to respond. The model may still be loading — try again in a moment, or ask a simpler question.`
+          : httpStatus === 504
+          ? detail || 'Ollama timed out. Try a simpler question or check Ollama is running.'
+          : httpStatus === 503
+          ? detail || 'Ollama is not running. Start it with: ollama serve'
+          : httpStatus === 404
+          ? 'Dataset not found on the server. Re-upload your file from the Datasets page to enable AI Chat.'
+          : httpStatus === 500
+          ? `Server error: ${detail || 'Something went wrong on the backend.'}`
+          : !err.response
+          ? 'Cannot reach the backend. Run: cd backend && python -m uvicorn main:app --port 8000'
+          : `Unexpected error (HTTP ${httpStatus}).`
+
       setMessages(prev =>
         prev.map(m => m.id === aiMsg.id ? {
           ...m, loading: false,
-          result: { type: 'error', value: 'Failed to connect to backend. Is the server running?' },
+          result: { type: 'error', value: errorValue },
         } : m)
       )
     }
@@ -205,7 +239,21 @@ export default function ChatPage() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() }
   }
 
-  if (!ds) return null
+  const modelName = ollamaStatus?.models?.[0] ?? 'Qwen 2.5'
+
+  if (!ds) return (
+    <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)] bg-surface-container-low gap-4">
+      <MessageSquare size={48} className="text-on-surface-variant/30" strokeWidth={1} />
+      <p className="text-on-surface font-bold text-lg">Dataset not found</p>
+      <p className="text-on-surface-variant text-sm">This dataset was removed or hasn't been uploaded yet.</p>
+      <button
+        className="h-10 px-5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:bg-primary-fixed transition-colors mt-2"
+        onClick={() => navigate('/datasets')}
+      >
+        Go to Datasets
+      </button>
+    </div>
+  )
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-surface-container-low relative animate-in fade-in duration-500">
@@ -249,7 +297,7 @@ export default function ChatPage() {
               </div>
               <h2 className="text-4xl font-black text-on-surface tracking-tight mb-4">Ask anything about your data</h2>
               <p className="text-lg text-on-surface-variant max-w-xl text-center mb-10 leading-relaxed">
-                Powered by <strong className="text-cyan-400">Qwen 2.5 via Ollama</strong> — answers are generated as Pandas code and executed securely on your local machine. No data leaves your device.
+                Powered by <strong className="text-cyan-400">{ollamaStatus?.models?.[0] ?? 'Qwen 2.5'} via Ollama</strong> — answers are generated as Pandas code and executed securely on your local machine. No data leaves your device.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
@@ -266,7 +314,7 @@ export default function ChatPage() {
             </div>
           )}
 
-          {messages.map(msg => <Message key={msg.id} msg={msg} />)}
+          {messages.map(msg => <Message key={msg.id} msg={msg} modelName={modelName} />)}
           <div ref={bottomRef} />
         </div>
       </div>
@@ -294,7 +342,7 @@ export default function ChatPage() {
             </button>
           </div>
           <p className="text-center text-[11px] font-medium text-on-surface-variant/70 tracking-wide mt-2">
-            Results are generated locally by Qwen 2.5. Always verify critical insights.
+            Results are generated locally via Ollama. Always verify critical insights.
           </p>
         </div>
       </div>

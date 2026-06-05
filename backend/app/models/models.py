@@ -10,7 +10,7 @@ class User(Base):
     username   = Column(String(80), unique=True, nullable=False, index=True)
     email      = Column(String(120), unique=True, nullable=True)
     hashed_pw  = Column(String, nullable=False)
-    role       = Column(String(20), default="Analyst")
+    role       = Column(String(20), default="analyst")
     created_at = Column(DateTime, default=datetime.utcnow)
     datasets   = relationship("Dataset", back_populates="owner", cascade="all, delete-orphan")
     dashboards = relationship("Dashboard", back_populates="owner", cascade="all, delete-orphan")

@@ -1,0 +1,397 @@
+{
+  "description": "Local LLM comparison: RAM usage, benchmarks, capabilities",
+  "note": "RAM values are estimates for Q4 quantization (GGUF/GPTQ) and FP16. Benchmark scores sourced from official model cards and open LLM leaderboard. CPU speed is approximate on a modern mid-range CPU (e.g., Ryzen 5 5600).",
+  "models": [
+    {
+      "name": "SmolLM2-135M",
+      "family": "SmolLM2",
+      "params_B": 0.135,
+      "ram_q4_gb": 0.3,
+      "ram_fp16_gb": 0.3,
+      "mmlu": 30.1,
+      "humaneval": 5.4,
+      "context_k": 8,
+      "speed_cpu_tps": 180,
+      "tasks": [
+        "chat",
+        "completion"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "tier": "tiny"
+    },
+    {
+      "name": "Qwen2.5-0.5B",
+      "family": "Qwen2.5",
+      "params_B": 0.5,
+      "ram_q4_gb": 0.4,
+      "ram_fp16_gb": 1.0,
+      "mmlu": 45.4,
+      "humaneval": 28.9,
+      "context_k": 32,
+      "speed_cpu_tps": 140,
+      "tasks": [
+        "chat",
+        "code",
+        "completion",
+        "translation"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "tier": "tiny"
+    },
+    {
+      "name": "TinyLlama-1.1B",
+      "family": "TinyLlama",
+      "params_B": 1.1,
+      "ram_q4_gb": 0.7,
+      "ram_fp16_gb": 2.2,
+      "mmlu": 25.6,
+      "humaneval": 8.0,
+      "context_k": 4,
+      "speed_cpu_tps": 70,
+      "tasks": [
+        "chat",
+        "completion"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+      "tier": "small"
+    },
+    {
+      "name": "Llama-3.2-1B",
+      "family": "Llama 3.x",
+      "params_B": 1.0,
+      "ram_q4_gb": 0.7,
+      "ram_fp16_gb": 2.0,
+      "mmlu": 44.7,
+      "humaneval": 25.0,
+      "context_k": 128,
+      "speed_cpu_tps": 80,
+      "tasks": [
+        "chat",
+        "completion",
+        "summarization"
+      ],
+      "license": "Llama 3",
+      "hf_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "tier": "small"
+    },
+    {
+      "name": "SmolLM2-1.7B",
+      "family": "SmolLM2",
+      "params_B": 1.7,
+      "ram_q4_gb": 1.1,
+      "ram_fp16_gb": 3.4,
+      "mmlu": 48.3,
+      "humaneval": 21.0,
+      "context_k": 8,
+      "speed_cpu_tps": 55,
+      "tasks": [
+        "chat",
+        "completion",
+        "summarization"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+      "tier": "small"
+    },
+    {
+      "name": "Qwen2.5-1.5B",
+      "family": "Qwen2.5",
+      "params_B": 1.5,
+      "ram_q4_gb": 1.1,
+      "ram_fp16_gb": 3.0,
+      "mmlu": 60.9,
+      "humaneval": 37.2,
+      "context_k": 32,
+      "speed_cpu_tps": 60,
+      "tasks": [
+        "chat",
+        "code",
+        "completion",
+        "summarization",
+        "translation"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "tier": "small"
+    },
+    {
+      "name": "Gemma-2-2B",
+      "family": "Gemma",
+      "params_B": 2.0,
+      "ram_q4_gb": 1.4,
+      "ram_fp16_gb": 4.0,
+      "mmlu": 52.2,
+      "humaneval": 36.0,
+      "context_k": 8,
+      "speed_cpu_tps": 40,
+      "tasks": [
+        "chat",
+        "completion",
+        "summarization"
+      ],
+      "license": "Gemma",
+      "hf_id": "google/gemma-2-2b-it",
+      "tier": "small"
+    },
+    {
+      "name": "Qwen2.5-3B",
+      "family": "Qwen2.5",
+      "params_B": 3.0,
+      "ram_q4_gb": 2.0,
+      "ram_fp16_gb": 6.0,
+      "mmlu": 65.6,
+      "humaneval": 55.5,
+      "context_k": 32,
+      "speed_cpu_tps": 32,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization",
+        "translation"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "Qwen/Qwen2.5-3B-Instruct",
+      "tier": "small"
+    },
+    {
+      "name": "Llama-3.2-3B",
+      "family": "Llama 3.x",
+      "params_B": 3.0,
+      "ram_q4_gb": 2.0,
+      "ram_fp16_gb": 6.0,
+      "mmlu": 58.0,
+      "humaneval": 40.0,
+      "context_k": 128,
+      "speed_cpu_tps": 30,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization"
+      ],
+      "license": "Llama 3",
+      "hf_id": "meta-llama/Llama-3.2-3B-Instruct",
+      "tier": "small"
+    },
+    {
+      "name": "Phi-3.5-mini",
+      "family": "Phi",
+      "params_B": 3.8,
+      "ram_q4_gb": 2.4,
+      "ram_fp16_gb": 7.6,
+      "mmlu": 69.0,
+      "humaneval": 59.0,
+      "context_k": 128,
+      "speed_cpu_tps": 25,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization"
+      ],
+      "license": "MIT",
+      "hf_id": "microsoft/Phi-3.5-mini-instruct",
+      "tier": "small"
+    },
+    {
+      "name": "Mistral-7B",
+      "family": "Mistral",
+      "params_B": 7.0,
+      "ram_q4_gb": 4.1,
+      "ram_fp16_gb": 14.0,
+      "mmlu": 63.0,
+      "humaneval": 41.0,
+      "context_k": 32,
+      "speed_cpu_tps": 15,
+      "tasks": [
+        "chat",
+        "code",
+        "summarization",
+        "translation"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "mistralai/Mistral-7B-Instruct-v0.3",
+      "tier": "medium"
+    },
+    {
+      "name": "Qwen2.5-7B",
+      "family": "Qwen2.5",
+      "params_B": 7.0,
+      "ram_q4_gb": 4.5,
+      "ram_fp16_gb": 14.0,
+      "mmlu": 74.2,
+      "humaneval": 72.0,
+      "context_k": 128,
+      "speed_cpu_tps": 14,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization",
+        "translation",
+        "agents"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "Qwen/Qwen2.5-7B-Instruct",
+      "tier": "medium"
+    },
+    {
+      "name": "Llama-3.1-8B",
+      "family": "Llama 3.x",
+      "params_B": 8.0,
+      "ram_q4_gb": 4.9,
+      "ram_fp16_gb": 16.0,
+      "mmlu": 68.4,
+      "humaneval": 62.0,
+      "context_k": 128,
+      "speed_cpu_tps": 12,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization",
+        "translation",
+        "agents"
+      ],
+      "license": "Llama 3",
+      "hf_id": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+      "tier": "medium"
+    },
+    {
+      "name": "Gemma-2-9B",
+      "family": "Gemma",
+      "params_B": 9.0,
+      "ram_q4_gb": 5.5,
+      "ram_fp16_gb": 18.0,
+      "mmlu": 71.3,
+      "humaneval": 55.0,
+      "context_k": 8,
+      "speed_cpu_tps": 10,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization"
+      ],
+      "license": "Gemma",
+      "hf_id": "google/gemma-2-9b-it",
+      "tier": "medium"
+    },
+    {
+      "name": "Phi-3-medium",
+      "family": "Phi",
+      "params_B": 14.0,
+      "ram_q4_gb": 8.4,
+      "ram_fp16_gb": 28.0,
+      "mmlu": 78.0,
+      "humaneval": 65.0,
+      "context_k": 128,
+      "speed_cpu_tps": 7,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization"
+      ],
+      "license": "MIT",
+      "hf_id": "microsoft/Phi-3-medium-128k-instruct",
+      "tier": "medium"
+    },
+    {
+      "name": "Qwen2.5-14B",
+      "family": "Qwen2.5",
+      "params_B": 14.0,
+      "ram_q4_gb": 8.9,
+      "ram_fp16_gb": 28.0,
+      "mmlu": 79.7,
+      "humaneval": 78.0,
+      "context_k": 128,
+      "speed_cpu_tps": 7,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization",
+        "translation",
+        "agents"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "Qwen/Qwen2.5-14B-Instruct",
+      "tier": "medium"
+    },
+    {
+      "name": "Mixtral-8x7B",
+      "family": "Mistral",
+      "params_B": 46.7,
+      "ram_q4_gb": 28.0,
+      "ram_fp16_gb": 90.0,
+      "mmlu": 71.0,
+      "humaneval": 40.2,
+      "context_k": 32,
+      "speed_cpu_tps": 3,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      "tier": "large"
+    },
+    {
+      "name": "Llama-3.1-70B",
+      "family": "Llama 3.x",
+      "params_B": 70.0,
+      "ram_q4_gb": 40.0,
+      "ram_fp16_gb": 140.0,
+      "mmlu": 83.6,
+      "humaneval": 80.0,
+      "context_k": 128,
+      "speed_cpu_tps": 2,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization",
+        "translation",
+        "agents"
+      ],
+      "license": "Llama 3",
+      "hf_id": "meta-llama/Meta-Llama-3.1-70B-Instruct",
+      "tier": "large"
+    },
+    {
+      "name": "Qwen2.5-72B",
+      "family": "Qwen2.5",
+      "params_B": 72.0,
+      "ram_q4_gb": 45.0,
+      "ram_fp16_gb": 144.0,
+      "mmlu": 86.1,
+      "humaneval": 86.0,
+      "context_k": 128,
+      "speed_cpu_tps": 2,
+      "tasks": [
+        "chat",
+        "code",
+        "reasoning",
+        "summarization",
+        "translation",
+        "agents"
+      ],
+      "license": "Apache 2.0",
+      "hf_id": "Qwen/Qwen2.5-72B-Instruct",
+      "tier": "large"
+    }
+  ],
+  "summary": {
+    "lowest_ram_q4": "SmolLM2-135M",
+    "best_mmlu_under_4gb": "Phi-3.5-mini",
+    "best_mmlu_overall": "Qwen2.5-72B",
+    "best_efficiency": "Qwen2.5-3B (65.6 MMLU / 2.0GB — highest score-per-GB under 3GB)"
+  }
+}

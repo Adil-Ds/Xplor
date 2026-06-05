@@ -1,82 +1,96 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useDatasetStore } from '../../store/datasetStore'
-import toast from 'react-hot-toast'
+import { useAIStore } from '../../store/aiStore'
+import {
+  Home, Database, LayoutDashboard, FileText, Settings,
+  Eye, Scissors, MessageSquare, Sparkles, Cpu, Cloud, Zap,
+} from 'lucide-react'
+
+const ROUTES = {
+  '/home':      { label: 'Home',       sub: 'Welcome back',                       icon: Home           },
+  '/datasets':  { label: 'Datasets',   sub: 'Upload and manage your data files',   icon: Database       },
+  '/explore':   { label: 'Explore',    sub: 'Analyse distributions and correlations', icon: Eye         },
+  '/clean':     { label: 'Clean',      sub: 'Transform and fix data quality issues', icon: Scissors     },
+  '/chat':      { label: 'AI Chat',    sub: 'Ask natural language questions',       icon: MessageSquare  },
+  '/dashboard': { label: 'Dashboards', sub: 'Build and share visual analytics',    icon: LayoutDashboard },
+  '/reports':   { label: 'Reports',    sub: 'Scheduled and shared reports',        icon: FileText       },
+  '/settings':  { label: 'Settings',   sub: 'Application preferences',             icon: Settings       },
+}
+
+const PROVIDERS = [
+  { id: 'auto',   label: 'Auto',  icon: Zap,   title: 'Try local Ollama first, fall back to Groq cloud' },
+  { id: 'ollama', label: 'Local', icon: Cpu,   title: 'Force local Ollama only' },
+  { id: 'groq',   label: 'Cloud', icon: Cloud, title: 'Force Groq cloud API only' },
+]
+
+/* ─── AI provider 3-way toggle ─── */
+function ProviderToggle() {
+  const { provider, setProvider } = useAIStore()
+  return (
+    <div className="flex items-center gap-0.5 p-0.5 rounded-full bg-surface-container-high border border-outline-variant/15 shadow-inner">
+      <Sparkles size={13} className="text-violet-400 ml-2 mr-1 shrink-0" />
+      {PROVIDERS.map(p => {
+        const Icon = p.icon
+        const active = provider === p.id
+        return (
+          <button
+            key={p.id}
+            title={p.title}
+            onClick={() => setProvider(p.id)}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all ${
+              active
+                ? 'bg-violet-500/20 text-violet-300 shadow-sm'
+                : 'text-on-surface-variant/60 hover:text-on-surface-variant'
+            }`}
+          >
+            <Icon size={12} strokeWidth={active ? 2.4 : 1.8} />
+            {p.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 export default function TopBar() {
-  const location = useLocation()
-  const { datasets } = useDatasetStore()
-  
-  // Extract base route and possible dataset ID (e.g., /clean/123 -> base=/clean, id=123)
-  const pathParts = location.pathname.split('/')
-  const baseRoute = '/' + (pathParts[1] || '')
-  
-  // If we don't have a datasetId in the URL, try to fallback to the first dataset available
-  // This prevents the buttons from feeling "broken" if the user hasn't explicitly selected one from Overview.
-  const urlDatasetId = pathParts[2] || null
-  const defaultDatasetId = datasets.length > 0 ? datasets[0].id : null
-  const datasetId = urlDatasetId || defaultDatasetId
+  const { pathname } = useLocation()
+  const { datasets }  = useDatasetStore()
 
-  const handleNavClick = (e, targetName) => {
-    if (!datasetId) {
-      e.preventDefault()
-      toast.error(`Please upload or select a dataset from the Overview to use ${targetName}.`)
-    }
-  }
+  const base  = '/' + (pathname.split('/')[1] || 'home')
+  const route = ROUTES[base] || ROUTES['/home']
+  const Icon  = route.icon
 
-  const getLinkTo = (targetBase) => {
-    return datasetId ? `${targetBase}/${datasetId}` : '/datasets'
-  }
+  const dsCount = datasets.length
 
   return (
-    <header className="sticky top-0 z-50 flex justify-between items-center px-8 w-full h-16 bg-surface-container/70 backdrop-blur-xl border-b border-outline-variant/10">
-      <div className="flex items-center gap-8">
-        <div className="flex items-center gap-6">
-          <NavLink 
-            to="/datasets"
-            className={`font-body-base text-sm font-semibold transition-colors duration-200 ${baseRoute === '/datasets' || baseRoute === '/home' ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary'}`}
-          >
-            Overview
-          </NavLink>
-          <NavLink 
-            to={getLinkTo('/clean')}
-            onClick={(e) => handleNavClick(e, 'Clean')}
-            className={`font-body-base text-sm font-semibold transition-colors duration-200 ${baseRoute === '/clean' ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary'}`}
-          >
-            Clean
-          </NavLink>
-          <NavLink 
-            to={getLinkTo('/chat')}
-            onClick={(e) => handleNavClick(e, 'Chat')}
-            className={`font-body-base text-sm font-semibold transition-colors duration-200 ${baseRoute === '/chat' ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary'}`}
-          >
-            Chat
-          </NavLink>
-          <NavLink 
-            to={getLinkTo('/explore')}
-            onClick={(e) => handleNavClick(e, 'Explore')}
-            className={`font-body-base text-sm font-semibold transition-colors duration-200 ${baseRoute === '/explore' ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary'}`}
-          >
-            Explore
-          </NavLink>
+    <header className="sticky top-0 z-50 flex items-center justify-between px-7 w-full h-16 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant/10 shrink-0">
+
+      {/* ── Breadcrumb ── */}
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center">
+          <Icon size={16} className="text-on-surface-variant" strokeWidth={1.8} />
+        </div>
+        <div>
+          <h1 className="text-sm font-bold text-on-surface leading-tight">{route.label}</h1>
+          <p className="text-[11px] text-on-surface-variant/60 leading-none mt-0.5">{route.sub}</p>
         </div>
       </div>
-      
-      <div className="flex items-center gap-4">
-        {/* Sync Indicator */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/20 shadow-inner">
-          <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
-          <span className="text-[11px] font-label-caps text-cyan-400 uppercase tracking-wider">Local Sync: Online</span>
-        </div>
-        
-        {/* Topbar actions */}
-        <div className="flex items-center gap-2 text-on-surface-variant">
-          <button className="p-2 hover:bg-surface-container-highest hover:text-primary rounded-full transition-all active:scale-95">
-            <span className="material-symbols-outlined text-[20px]">account_tree</span>
-          </button>
-          <button className="p-2 hover:bg-surface-container-highest hover:text-primary rounded-full transition-all active:scale-95">
-            <span className="material-symbols-outlined text-[20px]">settings</span>
-          </button>
-        </div>
+
+      {/* ── Right status strip ── */}
+      <div className="flex items-center gap-3">
+
+        {/* Dataset count */}
+        {dsCount > 0 && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/15 shadow-inner">
+            <Database size={13} className="text-indigo-400" />
+            <span className="text-[11px] font-semibold text-on-surface-variant">
+              {dsCount} dataset{dsCount !== 1 ? 's' : ''}
+            </span>
+          </div>
+        )}
+
+        {/* AI provider toggle */}
+        <ProviderToggle />
       </div>
     </header>
   )

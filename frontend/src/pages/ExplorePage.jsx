@@ -7,9 +7,9 @@ import {
 } from 'recharts'
 import {
   ChevronLeft, BarChart3, TrendingUp, AlertTriangle,
-  Lightbulb, Hash, Type, Calendar, ToggleLeft, Database,
-  CheckCircle, XCircle, Loader2, MessageSquare, Bot, Zap,
-  ShieldAlert, SkipForward, Wand2, Eye
+  Lightbulb, Hash, Type, Database,
+  CheckCircle, XCircle, Loader2, Zap,
+  ShieldAlert, Wand2, Eye, Sparkles,
 } from 'lucide-react'
 import { useDatasetStore } from '../store/datasetStore'
 import { useAuthStore } from '../store/authStore'

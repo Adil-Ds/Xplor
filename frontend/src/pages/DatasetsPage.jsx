@@ -12,6 +12,7 @@ import { formatBytes, formatDate, timeAgo, uuid } from '../utils/helpers'
 import toast from 'react-hot-toast'
 import Papa from 'papaparse'
 import * as XLSX from 'xlsx'
+import api from '../api/client'
 
 const API = 'http://localhost:8000'
 
@@ -153,16 +154,45 @@ export default function DatasetsPage() {
 
     for (let i = 0; i < acceptedFiles.length; i++) {
       const file = acceptedFiles[i]
-      setProgress(Math.round(((i) / acceptedFiles.length) * 100))
-      const ds = await parseFile(file)
-      if (ds) {
-        addDataset(ds)
-        toast.success(`"${ds.name}" uploaded — ${ds.rows?.toLocaleString() ?? '?'} rows`)
-      } else {
+      setProgress(Math.round((i / acceptedFiles.length) * 100))
+
+      // 1. Parse locally for immediate preview + column metadata
+      const localDs = await parseFile(file)
+      if (!localDs) {
         toast.error(`Failed to parse "${file.name}"`)
+        setProgress(Math.round(((i + 1) / acceptedFiles.length) * 100))
+        continue
+      }
+
+      // 2. Upload raw file to backend so AI routes (chat, explore, clean) can load it
+      let finalDs = localDs
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await api.post('/datasets/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        // Use the backend-generated UUID — all backend AI endpoints key on this ID
+        finalDs = { ...localDs, id: res.data.id, backendSynced: true }
+      } catch (err) {
+        if (err.response?.status !== 401) {
+          // 401 is already handled by the interceptor (session expired → login)
+          // Any other error means backend is down or unavailable — store locally only
+          console.warn('Backend upload failed, falling back to local storage:', err)
+          toast('Saved locally — start the backend server to enable AI features.', {
+            icon: '⚠️',
+            duration: 5000,
+          })
+        }
+      }
+
+      addDataset(finalDs)
+      if (finalDs.backendSynced) {
+        toast.success(`"${localDs.name}" ready — ${localDs.rows?.toLocaleString() ?? '?'} rows · AI enabled`)
       }
       setProgress(Math.round(((i + 1) / acceptedFiles.length) * 100))
     }
+
     setUploading(false)
   }, [addDataset])
 

@@ -250,16 +250,15 @@ def generate_ai_suggestions(df: pd.DataFrame, col_labels: Dict[str, str], anomal
                 "action":  {"op": "drop_column", "column": col},
             })
         elif null_pct > 15:
-            fill_op = "fill_nulls_mean" if is_num else "fill_nulls_mode"
-            fill_val = "mean" if is_num else "mode"
+            fill_with = "mean" if is_num else "mode"
             suggestions.append({
                 "id":      f"fill_{col}",
                 "column":  col,
                 "label":   label,
                 "type":    "info",
                 "impact":  "medium",
-                "text":    f'"{col}" has {null_pct:.0f}% missing — fill with {fill_val}.',
-                "action":  {"op": fill_op, "column": col},
+                "text":    f'"{col}" has {null_pct:.0f}% missing — fill with {fill_with}.',
+                "action":  {"op": "fill_null", "column": col, "fillWith": fill_with},
             })
 
         # 2. Anomalies detected in numeric column
@@ -273,8 +272,8 @@ def generate_ai_suggestions(df: pd.DataFrame, col_labels: Dict[str, str], anomal
                     "label":   label,
                     "type":    "warning",
                     "impact":  "high" if col_anomalies > 10 else "medium",
-                    "text":    f'"{col}" has {col_anomalies} anomalous rows detected by AI — review or filter.',
-                    "action":  {"op": "filter_rows", "column": col, "info": "anomaly"},
+                    "text":    f'"{col}" has {col_anomalies} anomalous rows detected by IsolationForest — review in the Anomalies tab.',
+                    "action":  None,
                 })
 
         # 3. Text columns that should be lowercase
@@ -288,7 +287,7 @@ def generate_ai_suggestions(df: pd.DataFrame, col_labels: Dict[str, str], anomal
                     "type":    "info",
                     "impact":  "low",
                     "text":    f'"{col}" has many ALL-CAPS values — consider lowercasing for consistency.',
-                    "action":  {"op": "to_lowercase", "column": col},
+                    "action":  {"op": "lowercase", "column": col},
                 })
 
         # 4. Trim whitespace for string columns
@@ -302,7 +301,7 @@ def generate_ai_suggestions(df: pd.DataFrame, col_labels: Dict[str, str], anomal
                     "type":    "info",
                     "impact":  "low",
                     "text":    f'"{col}" has leading/trailing whitespace — trim for cleaner data.',
-                    "action":  {"op": "trim_whitespace", "column": col},
+                    "action":  {"op": "trim_strings", "column": col},
                 })
 
         # 5. Duplicate-heavy ID columns

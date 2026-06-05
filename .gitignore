@@ -20,9 +20,11 @@ env/
 # ── AI Models / Data ─────────────────────────
 ai-models/data/raw/
 ai-models/data/processed/
-ai-models/models/*.pkl
-ai-models/models/*.pt
-ai-models/models/*.bin
+ai-models/models/
+*.safetensors
+*.pkl
+*.pt
+*.bin
 *.csv
 *.xlsx
 *.parquet
