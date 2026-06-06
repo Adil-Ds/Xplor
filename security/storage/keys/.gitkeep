@@ -1,0 +1,7 @@
+# storage/keys/.gitkeep
+# This directory stores the AES-256 master encryption key and rotated key archives.
+# The key file (master.key) contains the Base64-encoded 32-byte key.
+# NEVER commit real key files here — add to .gitignore: storage/keys/*.key
+# Example files:
+#   master.key               ← current active key
+#   master.key.20260601_120000  ← rotated key archive (for decrypting old data)

@@ -1,0 +1,4 @@
+# storage/encrypted/temporary/.gitkeep
+# This directory stores AES-256-GCM encrypted short-lived processing files.
+# Files written here have a .enc extension and are removed after processing.
+# Example: ai_processing_batch_001.json.enc

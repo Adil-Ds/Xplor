@@ -1,0 +1,186 @@
+{
+  "version": "1.0",
+  "description": "Categorised threat patterns for the Layered AI Security Guardrail System. Each pattern carries a unique ID for clean audit logs and explainability reports. Add new patterns here — no code changes required.",
+
+  "categories": [
+
+    {
+      "category"   : "override_attempts",
+      "severity"   : "high",
+      "description": "Attempts to override, reset, or replace the model's existing instructions.",
+      "patterns"   : [
+        { "id": "OV-001", "pattern": "ignore previous instructions"   },
+        { "id": "OV-002", "pattern": "ignore all instructions"        },
+        { "id": "OV-003", "pattern": "ignore the above"               },
+        { "id": "OV-004", "pattern": "ignore your instructions"       },
+        { "id": "OV-005", "pattern": "disregard previous"             },
+        { "id": "OV-006", "pattern": "disregard all instructions"     },
+        { "id": "OV-007", "pattern": "forget your instructions"       },
+        { "id": "OV-008", "pattern": "forget everything above"        },
+        { "id": "OV-009", "pattern": "override previous instructions" },
+        { "id": "OV-010", "pattern": "new instructions:"              },
+        { "id": "OV-011", "pattern": "updated instructions:"          },
+        { "id": "OV-012", "pattern": "reset your instructions"        }
+      ]
+    },
+
+    {
+      "category"   : "role_hijacking",
+      "severity"   : "high",
+      "description": "Attempts to reassign the model's identity, purpose, or role.",
+      "patterns"   : [
+        { "id": "RH-001", "pattern": "you are now"               },
+        { "id": "RH-002", "pattern": "act as"                    },
+        { "id": "RH-003", "pattern": "pretend to be"             },
+        { "id": "RH-004", "pattern": "your new role"             },
+        { "id": "RH-005", "pattern": "you are a"                 },
+        { "id": "RH-006", "pattern": "behave as"                 },
+        { "id": "RH-007", "pattern": "roleplay as"               },
+        { "id": "RH-008", "pattern": "from now on you"           },
+        { "id": "RH-009", "pattern": "your real purpose is"      },
+        { "id": "RH-010", "pattern": "your true purpose"         },
+        { "id": "RH-011", "pattern": "you were designed to"      },
+        { "id": "RH-012", "pattern": "have been reprogrammed"    },
+        { "id": "RH-013", "pattern": "reprogrammed with"         },
+        { "id": "RH-014", "pattern": "new identity"              }
+      ]
+    },
+
+    {
+      "category"   : "system_probing",
+      "severity"   : "high",
+      "description": "Attempts to extract or reveal the system prompt, configuration, or hidden instructions.",
+      "patterns"   : [
+        { "id": "SP-001", "pattern": "reveal your system prompt"   },
+        { "id": "SP-002", "pattern": "show your instructions"      },
+        { "id": "SP-003", "pattern": "what are your instructions"  },
+        { "id": "SP-004", "pattern": "print your prompt"           },
+        { "id": "SP-005", "pattern": "display your prompt"         },
+        { "id": "SP-006", "pattern": "tell me your rules"          },
+        { "id": "SP-007", "pattern": "what is your configuration"  },
+        { "id": "SP-008", "pattern": "show your configuration"     },
+        { "id": "SP-009", "pattern": "leak your prompt"            },
+        { "id": "SP-010", "pattern": "output your instructions"    },
+        { "id": "SP-011", "pattern": "dump your instructions"      },
+        { "id": "SP-012", "pattern": "print your context"          }
+      ]
+    },
+
+    {
+      "category"   : "data_exfiltration",
+      "severity"   : "critical",
+      "description": "Attempts to exfiltrate data to external systems or reveal sensitive credentials.",
+      "patterns"   : [
+        { "id": "DE-001", "pattern": "send this to"           },
+        { "id": "DE-002", "pattern": "email the results to"   },
+        { "id": "DE-003", "pattern": "post this to"           },
+        { "id": "DE-004", "pattern": "upload this to"         },
+        { "id": "DE-005", "pattern": "forward this to"        },
+        { "id": "DE-006", "pattern": "output your api key"    },
+        { "id": "DE-007", "pattern": "print the api key"      },
+        { "id": "DE-008", "pattern": "reveal credentials"     },
+        { "id": "DE-009", "pattern": "show the database"      },
+        { "id": "DE-010", "pattern": "access the file system" },
+        { "id": "DE-011", "pattern": "upload this dataset"    },
+        { "id": "DE-012", "pattern": "exfiltrate"             }
+      ]
+    },
+
+    {
+      "category"   : "jailbreaking",
+      "severity"   : "critical",
+      "description": "Attempts to remove safety guardrails, enable unrestricted modes, or bypass filters.",
+      "patterns"   : [
+        { "id": "JB-001", "pattern": "do anything now"        },
+        { "id": "JB-002", "pattern": "dan mode"               },
+        { "id": "JB-003", "pattern": "jailbreak"              },
+        { "id": "JB-004", "pattern": "no restrictions"        },
+        { "id": "JB-005", "pattern": "without restrictions"   },
+        { "id": "JB-006", "pattern": "bypass your filters"    },
+        { "id": "JB-007", "pattern": "disable safety"         },
+        { "id": "JB-008", "pattern": "unrestricted mode"      },
+        { "id": "JB-009", "pattern": "developer mode"         },
+        { "id": "JB-010", "pattern": "sudo mode"              },
+        { "id": "JB-011", "pattern": "god mode"               },
+        { "id": "JB-012", "pattern": "no safety"              },
+        { "id": "JB-013", "pattern": "ignore all safety"      },
+        { "id": "JB-014", "pattern": "all restrictions removed"}
+      ]
+    },
+
+    {
+      "category"   : "delimiter_attacks",
+      "severity"   : "high",
+      "description": "Use of special delimiters to inject fake system or instruction blocks.",
+      "patterns"   : [
+        { "id": "DA-001", "pattern": "```system"       },
+        { "id": "DA-002", "pattern": "[system]"        },
+        { "id": "DA-003", "pattern": "<system>"        },
+        { "id": "DA-004", "pattern": "### instruction" },
+        { "id": "DA-005", "pattern": "## new task"     },
+        { "id": "DA-006", "pattern": "---system---"    },
+        { "id": "DA-007", "pattern": "[instructions]"  },
+        { "id": "DA-008", "pattern": "<instructions>"  },
+        { "id": "DA-009", "pattern": "==system=="      },
+        { "id": "DA-010", "pattern": "[[override]]"    },
+        { "id": "DA-011", "pattern": "<|system|>"      },
+        { "id": "DA-012", "pattern": "<|assistant|>"   }
+      ]
+    },
+
+    {
+      "category"   : "code_execution",
+      "severity"   : "critical",
+      "description": "Attempts to inject and execute arbitrary code through the model's output.",
+      "patterns"   : [
+        { "id": "CE-001", "pattern": "eval("          },
+        { "id": "CE-002", "pattern": "exec("          },
+        { "id": "CE-003", "pattern": "os.system("     },
+        { "id": "CE-004", "pattern": "subprocess"     },
+        { "id": "CE-005", "pattern": "__import__"     },
+        { "id": "CE-006", "pattern": "import os"      },
+        { "id": "CE-007", "pattern": "open("          },
+        { "id": "CE-008", "pattern": "system32"       },
+        { "id": "CE-009", "pattern": "/etc/passwd"    },
+        { "id": "CE-010", "pattern": "base64.decode"  }
+      ]
+    },
+
+    {
+      "category"   : "sql_injection",
+      "severity"   : "critical",
+      "description": "SQL injection payloads that could be passed through to database queries.",
+      "patterns"   : [
+        { "id": "SI-001", "pattern": "union select"      },
+        { "id": "SI-002", "pattern": "drop table"        },
+        { "id": "SI-003", "pattern": "delete from"       },
+        { "id": "SI-004", "pattern": "insert into"       },
+        { "id": "SI-005", "pattern": "or '1'='1'"        },
+        { "id": "SI-006", "pattern": "or 1=1"            },
+        { "id": "SI-007", "pattern": "'; drop"           },
+        { "id": "SI-008", "pattern": "-- -"              },
+        { "id": "SI-009", "pattern": "xp_cmdshell"       },
+        { "id": "SI-010", "pattern": "information_schema" }
+      ]
+    },
+
+    {
+      "category"   : "indirect_injection",
+      "severity"   : "medium",
+      "description": "Indirect or hypothetical framing designed to bypass safety checks.",
+      "patterns"   : [
+        { "id": "IN-001", "pattern": "hypothetically speaking"    },
+        { "id": "IN-002", "pattern": "if you had no rules"        },
+        { "id": "IN-003", "pattern": "suppose you had no rules"   },
+        { "id": "IN-004", "pattern": "pretend there are no limits"},
+        { "id": "IN-005", "pattern": "no limits"                  },
+        { "id": "IN-006", "pattern": "for a story i am writing"   },
+        { "id": "IN-007", "pattern": "in a fictional world"       },
+        { "id": "IN-008", "pattern": "as a thought experiment"    },
+        { "id": "IN-009", "pattern": "what would you do"          },
+        { "id": "IN-010", "pattern": "imagine you had no"         }
+      ]
+    }
+
+  ]
+}
