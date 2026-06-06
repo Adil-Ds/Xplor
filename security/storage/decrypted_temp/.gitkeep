@@ -1,0 +1,5 @@
+# storage/decrypted_temp/.gitkeep
+# This directory holds TEMPORARILY decrypted plaintext files during processing.
+# Files here are written by decrypt_file() and cleaned up by cleanup_temp_files().
+# NEVER commit real data files here.
+# Add this directory to .gitignore to be safe: storage/decrypted_temp/*
