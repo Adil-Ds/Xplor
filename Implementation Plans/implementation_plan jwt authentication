@@ -1,0 +1,224 @@
+# JWT Authentication & Password Security System — Implementation Plan
+
+## Background
+
+The `auth/` directory already exists with 6 stub files (all 0 bytes).
+`security_settings.py` already has `EncryptionConfig` added — we extend it with `AuthConfig`.
+The existing `AuditLogger` (in `guards/audit_logger.py`) will be reused via `log_system_event()`.
+
+---
+
+## Proposed Changes
+
+### auth/ — 6 Core Modules (all currently empty stubs)
+
+---
+
+#### [NEW] auth/auth_exceptions.py
+Custom exception hierarchy. Defined first so all other modules can import from it.
+
+```
+AuthError (base)
+├── InvalidCredentialsError   — wrong username or password
+├── TokenExpiredError         — JWT exp claim is in the past
+├── InvalidTokenError         — bad signature, malformed, missing claims
+├── UnauthorizedAccessError   — valid token but insufficient role
+├── WeakSecretError           — JWT_SECRET_KEY too short or missing
+└── UserNotFoundError         — username doesn't exist in the user store
+```
+
+---
+
+#### [MODIFY] auth/password_hashing.py
+bcrypt-based password security.
+
+Key decisions:
+- **bcrypt** (not SHA-256 alone) — bcrypt is designed for passwords: slow by design, auto-salted, resistant to GPU cracking
+- `bcrypt.gensalt(rounds=12)` — 12 rounds is the current OWASP recommendation (balances security vs latency)
+- `hash_password(plain) → str` — returns a 60-char bcrypt string safe to store in a database
+- `verify_password(plain, hashed) → bool` — uses `bcrypt.checkpw()` — timing-safe comparison built in
+- Never logs the password — only logs "password hashed for user X"
+
+---
+
+#### [MODIFY] auth/jwt_handler.py
+JWT token generation and decoding.
+
+Key decisions:
+- **PyJWT** library (not `python-jose`) — simpler, actively maintained, standard
+- **HS256** algorithm by default (configurable via `JWT_ALGORITHM` env var)
+- Token payload: `{ user_id, username, role, iat, exp }`
+- `create_access_token(payload, expires_minutes)` → signed JWT string
+- `decode_token(token) → dict` — verifies signature + expiry in one call
+- Expired tokens raise `TokenExpiredError`; bad signature raises `InvalidTokenError`
+- Secret loaded from `JWT_SECRET_KEY` env var — rejected if < 32 characters
+
+---
+
+#### [NEW] auth/token_validator.py
+Dedicated validation layer (separation of concerns from jwt_handler).
+
+Responsibilities:
+- `validate_token(token) → dict` — full validation pipeline
+- `is_token_expired(token) → bool` — quick expiry check without full decode
+- `extract_claims(token) → dict` — extract without raising on expiry (for logging)
+- `require_role(token, required_role)` — raise `UnauthorizedAccessError` if role insufficient
+- Role hierarchy: `admin > analyst > viewer`
+
+---
+
+#### [MODIFY] auth/auth_utils.py
+Reusable helper functions.
+
+Functions:
+- `generate_user_payload(user_id, username, role) → dict`
+- `get_current_timestamp() → int` — UTC Unix timestamp
+- `build_auth_response(token, expires_in) → dict` — standard `{success, access_token, token_type, expires_in}`
+- `build_error_response(message) → dict` — standard `{success: false, message}`
+- `validate_credentials(username, password) → bool` — basic field validation (not empty, not too long)
+- `get_user_role(token) → str` — extract role claim
+- `get_user_identity(token) → dict` — extract user_id + username
+
+---
+
+#### [NEW] auth/auth_exceptions.py ← (already listed above, created first)
+
+#### [NEW] auth/token_validator.py ← (already listed above)
+
+---
+
+### configs/ — Extension
+
+#### [MODIFY] configs/security_settings.py
+
+Add `AuthConfig` class at the bottom:
+
+```python
+class AuthConfig:
+    JWT_ALGORITHM           = "HS256"
+    TOKEN_EXPIRATION_MINUTES = 30
+    MIN_SECRET_KEY_LENGTH   = 32
+    ENV_SECRET_KEY_NAME     = "JWT_SECRET_KEY"
+    ENV_ALGORITHM_NAME      = "JWT_ALGORITHM"
+    ENV_EXPIRY_NAME         = "TOKEN_EXPIRATION_MINUTES"
+    BCRYPT_ROUNDS           = 12
+    MAX_USERNAME_LENGTH     = 64
+    MAX_PASSWORD_LENGTH     = 128
+
+# Auth EventType values added to existing EventType class:
+    LOGIN_SUCCESS     = "login_success"
+    LOGIN_FAILED      = "login_failed"
+    TOKEN_GENERATED   = "token_generated"
+    TOKEN_EXPIRED     = "token_expired"
+    TOKEN_INVALID     = "token_invalid"
+    UNAUTHORIZED      = "unauthorized_access"
+    LOGOUT            = "logout"
+```
+
+---
+
+### .env.example — Update
+
+Add JWT variables to the existing template:
+```
+JWT_SECRET_KEY=<minimum-32-character-random-string>
+JWT_ALGORITHM=HS256
+TOKEN_EXPIRATION_MINUTES=30
+```
+
+### requirements.txt — Update
+
+Add `PyJWT>=2.8.0` and `bcrypt>=4.1.0`.
+
+---
+
+### tests/ — 3 Test Files
+
+#### [MODIFY] tests/test_password_hashing.py (currently empty)
+- hash is generated (60-char bcrypt string)
+- same password produces different hashes (salt randomness)
+- correct password verifies successfully
+- wrong password returns False
+- empty password handled safely
+- hash is never plaintext
+
+#### [NEW] tests/test_jwt.py
+- token created with correct claims (user_id, username, role, exp, iat)
+- token decoded successfully with correct secret
+- role claim present in decoded payload
+- expired token raises TokenExpiredError
+- wrong secret raises InvalidTokenError
+- malformed token raises InvalidTokenError
+- missing payload fields raise InvalidTokenError
+
+#### [MODIFY] tests/test_token_validation.py (currently empty)
+- valid token accepted
+- expired token rejected
+- tampered signature rejected
+- missing claims rejected
+- role hierarchy enforcement (analyst cannot access admin resource)
+- build_auth_response() returns correct shape
+- build_error_response() returns correct shape
+
+---
+
+### docs/ — 3 Documentation Files
+
+#### [NEW] docs/authentication_architecture.md
+Full auth flow diagrams, module table, exception hierarchy.
+
+#### [NEW] docs/jwt_flow.md
+JWT lifecycle: creation → signing → transmission → verification → expiry.
+
+#### [NEW] docs/password_security.md
+Why bcrypt, salting, OWASP recommendations, what NOT to do.
+
+---
+
+## Open Questions
+
+> [!NOTE]
+> **PyJWT vs python-jose**: I will use PyJWT (simpler, more widely used, no extra dependencies). If you need RS256 asymmetric signing in future, python-jose would be needed — but HS256 is correct for this scope.
+
+> [!NOTE]
+> **User store**: The auth system is stateless — it doesn't include a database. `validate_credentials()` takes a stored hash as input (the caller is responsible for looking up the user). This keeps the module educational without pulling in SQLAlchemy.
+
+> [!IMPORTANT]
+> **`JWT_SECRET_KEY`**: This must be set in `.env` before running. The system will reject secrets shorter than 32 characters and raise `WeakSecretError` at import time.
+
+---
+
+## Dependency Order
+
+```
+auth_exceptions.py     (no deps)
+        ↓
+password_hashing.py    (bcrypt + auth_exceptions)
+        ↓
+jwt_handler.py         (PyJWT + auth_exceptions + AuthConfig)
+        ↓
+token_validator.py     (jwt_handler + auth_exceptions)
+        ↓
+auth_utils.py          (all above + AuditLogger)
+```
+
+---
+
+## Verification Plan
+
+### Automated
+```bash
+cd security
+python tests/test_password_hashing.py
+python tests/test_jwt.py
+python tests/test_token_validation.py
+```
+
+### Module self-tests
+```bash
+python auth/password_hashing.py
+python auth/jwt_handler.py
+python auth/token_validator.py
+```
+
+All tests follow the same style as existing test files (custom runner, no pytest dependency).
