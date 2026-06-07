@@ -1,0 +1,25 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# security/requirements.txt
+#
+# Python dependencies for the Xplor Security Module.
+# Install with:  pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Cryptography ──────────────────────────────────────────────────────────────
+# AES-256-GCM encryption (used by encryption/ module)
+cryptography>=42.0.0
+
+# ── Password Hashing ─────────────────────────────────────────────────────────
+# bcrypt — specifically designed for password hashing (slow by design, auto-salted)
+# NEVER replace with hashlib.sha256 for passwords
+bcrypt>=4.1.0
+
+# ── JWT Authentication ────────────────────────────────────────────────────────
+# PyJWT — JSON Web Token implementation
+# Handles HS256 signing, signature verification, and expiration checking
+PyJWT>=2.8.0
+
+# ── Environment Variables ─────────────────────────────────────────────────────
+# python-dotenv — load .env file into os.environ
+# Used by: encryption/key_manager.py and auth/jwt_handler.py
+python-dotenv>=1.0.0

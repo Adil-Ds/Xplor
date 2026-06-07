@@ -86,6 +86,15 @@ class EventType:
     INTEGRITY_VIOLATION = "integrity_violation"
     KEY_ROTATION        = "key_rotation"
     KEY_GENERATED       = "key_generated"
+    # ── Authentication events (added for JWT Auth System) ──
+    LOGIN_SUCCESS      = "login_success"
+    LOGIN_FAILED       = "login_failed"
+    TOKEN_GENERATED    = "token_generated"
+    TOKEN_EXPIRED      = "token_expired"
+    TOKEN_INVALID      = "token_invalid"
+    UNAUTHORIZED       = "unauthorized_access"
+    LOGOUT             = "logout"
+    PASSWORD_CHANGED   = "password_changed"
 
 
 # ── Monitoring Configuration ───────────────────────────────────
@@ -198,3 +207,41 @@ ENCRYPTED_REPORTS   = ENCRYPTED_DIR / "reports"
 ENCRYPTED_TEMPORARY = ENCRYPTED_DIR / "temporary"
 DECRYPTED_TEMP_DIR  = STORAGE_DIR  / "decrypted_temp"
 KEYS_DIR            = STORAGE_DIR  / "keys"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# JWT AUTHENTICATION CONFIGURATION
+# Added for JWT Auth & Password Security System
+# ══════════════════════════════════════════════════════════════════════════════
+
+class AuthConfig:
+    """
+    Central configuration for the JWT Authentication subsystem.
+
+    All auth constants live here. Changing values here propagates
+    to jwt_handler, token_validator, and auth_utils.
+
+    Fields:
+        JWT_ALGORITHM            — signing algorithm (HS256 recommended)
+        TOKEN_EXPIRATION_MINUTES — default access token lifetime
+        MIN_SECRET_KEY_LENGTH    — reject secrets shorter than this
+        BCRYPT_ROUNDS            — bcrypt work factor (OWASP: 12)
+        ENV_SECRET_KEY_NAME      — env var name for JWT secret
+        ENV_ALGORITHM_NAME       — env var name for algorithm override
+        ENV_EXPIRY_NAME          — env var name for expiry override
+        MAX_USERNAME_LENGTH      — input validation limit
+        MAX_PASSWORD_LENGTH      — input validation limit (bcrypt max: 72)
+        VALID_ROLES              — accepted role values in JWT claims
+        ROLE_HIERARCHY           — maps role → numeric level (higher = more access)
+    """
+    JWT_ALGORITHM            = "HS256"                 # HMAC-SHA256
+    TOKEN_EXPIRATION_MINUTES = 30                      # 30-minute default lifetime
+    MIN_SECRET_KEY_LENGTH    = 32                      # reject secrets < 32 chars
+    BCRYPT_ROUNDS            = 12                      # OWASP 2024 recommendation
+    ENV_SECRET_KEY_NAME      = "JWT_SECRET_KEY"        # env var holding the secret
+    ENV_ALGORITHM_NAME       = "JWT_ALGORITHM"         # env var for algorithm
+    ENV_EXPIRY_NAME          = "TOKEN_EXPIRATION_MINUTES"  # env var for expiry
+    MAX_USERNAME_LENGTH      = 64                      # db column size guard
+    MAX_PASSWORD_LENGTH      = 72                       # bcrypt HARD LIMIT: only first 72 bytes processed
+    VALID_ROLES              = {"admin", "analyst", "viewer"}  # accepted JWT roles
+    ROLE_HIERARCHY           = {"admin": 3, "analyst": 2, "viewer": 1}  # access levels
