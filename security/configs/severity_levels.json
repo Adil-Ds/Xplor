@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "description": "Severity weight mappings for the Layered AI Security Guardrail System",
+
+  "severity_weights": {
+    "critical" : 1.0,
+    "high"     : 0.7,
+    "medium"   : 0.4,
+    "low"      : 0.2
+  },
+
+  "confidence_thresholds": {
+    "low"    : [0.0,  0.35],
+    "medium" : [0.35, 0.65],
+    "high"   : [0.65, 1.01]
+  },
+
+  "action_thresholds": {
+    "allowed"      : [0.0,  0.3],
+    "warning_only" : [0.3,  0.5],
+    "blocked"      : [0.5,  1.01]
+  },
+
+  "obfuscation_bonus"  : 0.15,
+  "short_input_bonus"  : 0.1,
+  "short_input_cutoff" : 100
+}

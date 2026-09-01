@@ -1,0 +1,4 @@
+# storage/encrypted/datasets/.gitkeep
+# This directory stores AES-256-GCM encrypted analytics datasets.
+# Files written here have a .enc extension.
+# Example: sales_q3.csv.enc

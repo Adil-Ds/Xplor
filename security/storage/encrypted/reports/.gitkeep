@@ -1,0 +1,4 @@
+# storage/encrypted/reports/.gitkeep
+# This directory stores AES-256-GCM encrypted analytics reports and exports.
+# Files written here have a .enc extension.
+# Example: revenue_report_q3.pdf.enc

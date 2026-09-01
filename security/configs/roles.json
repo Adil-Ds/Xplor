@@ -1,0 +1,68 @@
+{
+  "_comment": "Central permission store for the Xplor RBAC System. Edit this file to change role permissions — no code changes needed.",
+
+  "roles": {
+
+    "admin": {
+      "_description": "Full system access. Platform administrators only.",
+      "permissions": [
+        "manage_users",
+        "upload_dataset",
+        "delete_dataset",
+        "analyze_data",
+        "export_reports",
+        "view_reports",
+        "view_dashboards",
+        "view_logs",
+        "manage_roles",
+        "configure_system"
+      ]
+    },
+
+    "analyst": {
+      "_description": "Analytics-focused access. Data analysts working with platform data.",
+      "permissions": [
+        "upload_dataset",
+        "analyze_data",
+        "export_reports",
+        "view_reports",
+        "view_dashboards"
+      ]
+    },
+
+    "viewer": {
+      "_description": "Read-only access. Stakeholders and report consumers.",
+      "permissions": [
+        "view_reports",
+        "view_dashboards"
+      ]
+    }
+
+  },
+
+  "all_permissions": [
+    "manage_users",
+    "upload_dataset",
+    "delete_dataset",
+    "analyze_data",
+    "export_reports",
+    "view_reports",
+    "view_dashboards",
+    "view_logs",
+    "manage_roles",
+    "configure_system"
+  ],
+
+  "_permission_descriptions": {
+    "manage_users"    : "Create, edit, deactivate platform user accounts",
+    "upload_dataset"  : "Upload CSV or JSON datasets to the analytics platform",
+    "delete_dataset"  : "Permanently delete datasets from the platform",
+    "analyze_data"    : "Run AI models and analytics pipelines on datasets",
+    "export_reports"  : "Export analytics results to PDF, CSV, or external systems",
+    "view_reports"    : "View existing analytics reports and visualizations",
+    "view_dashboards" : "Access read-only platform dashboards",
+    "view_logs"       : "Access security and audit logs",
+    "manage_roles"    : "Assign and revoke roles for other users",
+    "configure_system": "Modify platform-wide settings and configurations"
+  }
+}
