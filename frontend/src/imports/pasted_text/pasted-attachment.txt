@@ -1,0 +1,696 @@
+# Advanced Figma AI Prompt for Your Industry-Level Frontend
+
+Copy the entire prompt below and paste it into the Figma AI / Text-to-Website tool.
+
+---
+
+Create an **ultra-modern, enterprise-grade, AI SaaS platform frontend** in **React JS** for a product called:
+
+# “AI-Powered Secure Data Analyzer”
+
+This is NOT a basic student dashboard.
+
+This must look like a **multi-million dollar AI cybersecurity + analytics platform** built by a professional Silicon Valley product team.
+
+The UI/UX quality must compete with products like:
+
+* Palantir
+* Databricks
+* Snowflake
+* Tableau
+* Microsoft Fabric
+* CrowdStrike
+* SentinelOne
+* Splunk
+* Notion AI
+* Vercel
+* Stripe Dashboard
+* Linear
+* Retool
+* Perplexity AI
+* OpenAI Enterprise
+
+The frontend must feel:
+
+* futuristic
+* premium
+* enterprise-level
+* highly interactive
+* AI-powered
+* cybersecurity focused
+* minimal but powerful
+* beautiful
+* intelligent
+* smooth
+* trustworthy
+* visually stunning
+
+DO NOT generate generic admin dashboard UI.
+
+DO NOT use old Bootstrap-style layouts.
+
+DO NOT use childish gradients.
+
+DO NOT create ordinary cards and tables only.
+
+Everything must feel next-generation.
+
+---
+
+# TECHNOLOGY STACK
+
+Generate frontend in:
+
+* React JS
+* Tailwind CSS
+* Framer Motion animations
+* Shadcn UI style
+* Lucide React icons
+* Responsive design
+* Dark mode first
+* Component-based architecture
+
+UI should feel like:
+
+* Vercel
+* Stripe
+* Linear
+* Framer
+* OpenAI
+
+Use clean modern code structure.
+
+---
+
+# GLOBAL DESIGN SYSTEM
+
+# Theme
+
+Primary theme:
+
+* Dark futuristic AI dashboard
+
+Color palette:
+
+* Background: #070B14
+* Secondary background: #0F172A
+* Glass panels: rgba(255,255,255,0.05)
+* Borders: rgba(255,255,255,0.08)
+
+Accent colors:
+
+* Neon blue
+* Cyan
+* Purple
+* Emerald
+* AI glow effects
+
+Use subtle gradients ONLY.
+
+No overuse.
+
+---
+
+# Typography
+
+Use modern premium fonts:
+
+* Inter
+* Satoshi
+* Geist
+* SF Pro Display style
+
+Typography must feel enterprise-level.
+
+Large bold hero headings.
+
+Perfect spacing hierarchy.
+
+---
+
+# Visual Style
+
+Use:
+
+* glassmorphism
+* soft shadows
+* glowing borders
+* blur effects
+* floating UI layers
+* subtle animated particles
+* AI neural network backgrounds
+* cyber grid patterns
+* animated gradients
+* holographic dashboard effects
+
+Everything must feel smooth and intelligent.
+
+---
+
+# ANIMATIONS
+
+Add advanced animations:
+
+* smooth page transitions
+* hover glow effects
+* animated charts
+* floating cards
+* sidebar expansion animations
+* loading skeletons
+* animated progress rings
+* data streaming effects
+* AI thinking animation
+* typing animation in AI chatbot
+* animated graph lines
+* fade + slide transitions
+* micro-interactions everywhere
+
+Use Framer Motion heavily.
+
+Animations must feel premium and smooth.
+
+---
+
+# FULL APPLICATION STRUCTURE
+
+Create complete frontend architecture including these pages:
+
+---
+
+# 1. LANDING PAGE
+
+Must look world-class.
+
+Sections:
+
+## Hero Section
+
+Huge AI-inspired hero area with:
+
+* animated AI particles
+* floating dashboard preview
+* glowing risk analytics UI
+* animated data visualization
+* cyber grid background
+
+Hero heading:
+
+“AI That Understands, Cleans & Protects Your Data”
+
+Subheading:
+
+“Enterprise-grade AI analytics platform with automated security intelligence, anomaly detection, forecasting, and natural language querying.”
+
+Buttons:
+
+* Get Started
+* Watch Demo
+
+Add:
+
+* floating analytics widgets
+* animated charts
+* live risk meter
+* moving AI beams
+
+---
+
+## Trusted By Section
+
+Add fake enterprise logos in grayscale.
+
+---
+
+## Features Section
+
+Create modern bento-grid layout.
+
+Feature cards with hover animations.
+
+Features:
+
+* AI Data Cleaning
+* Natural Language Querying
+* Risk Score Engine
+* PII Detection
+* Forecasting AI
+* Automated Dashboards
+* Anomaly Detection
+* AES-256 Encryption
+* Role-Based Access
+* AI Security Monitoring
+
+Each card should contain:
+
+* animated icon
+* mini graph
+* glowing border
+* hover tilt effect
+
+---
+
+## Interactive Product Demo
+
+Show animated dashboard preview.
+
+Include:
+
+* real-time charts
+* AI chat assistant
+* risk score ring
+* heatmaps
+* security alerts
+* anomaly timeline
+
+---
+
+## AI Workflow Section
+
+Horizontal animated process timeline:
+
+Upload File
+→ AI Processing
+→ Data Cleaning
+→ Risk Analysis
+→ Dashboard Generation
+→ AI Insights
+
+Use connected glowing lines.
+
+---
+
+## Why We Are Different
+
+Comparison section against:
+
+* Tableau
+* Power BI
+
+Show that competitors lack AI security analysis.
+
+Use beautiful comparison table.
+
+---
+
+## Testimonials
+
+Modern glassmorphism cards.
+
+---
+
+## Pricing Section
+
+Beautiful SaaS pricing cards.
+
+---
+
+## Footer
+
+Premium futuristic footer with:
+
+* links
+* social icons
+* newsletter
+* company info
+
+---
+
+# 2. AUTHENTICATION PAGES
+
+Create:
+
+* Login
+* Signup
+* MFA Verification
+* Forgot Password
+
+Style:
+
+* split screen design
+* AI illustration on left
+* glassmorphism form on right
+
+Add:
+
+* animated background
+* glowing input fields
+* password strength indicator
+* OTP verification UI
+* social login buttons
+
+---
+
+# 3. MAIN DASHBOARD
+
+MOST IMPORTANT PAGE.
+
+This must look INSANELY ADVANCED.
+
+Layout:
+
+* collapsible sidebar
+* top navbar
+* workspace layout
+* floating widgets
+
+---
+
+# SIDEBAR
+
+Modern vertical navigation with icons.
+
+Menu:
+
+* Overview
+* Upload Dataset
+* AI Cleaning
+* Analytics
+* Forecasting
+* Risk Engine
+* Security Center
+* AI Chat
+* Reports
+* Team Management
+* Settings
+
+Add hover animations and active glow indicator.
+
+---
+
+# TOP NAVBAR
+
+Include:
+
+* search bar
+* notifications
+* AI assistant button
+* profile dropdown
+* dark/light toggle
+* live sync indicator
+
+---
+
+# DASHBOARD OVERVIEW
+
+Include advanced widgets:
+
+## KPI Cards
+
+Show:
+
+* Dataset Health
+* Security Score
+* AI Confidence
+* Active Threats
+* Forecast Accuracy
+* Processing Speed
+
+Cards must include:
+
+* animated charts
+* glowing borders
+* trend indicators
+* gradient icons
+
+---
+
+## Data Upload Section
+
+Beautiful drag-and-drop upload area.
+
+Include:
+
+* upload animation
+* supported formats
+* progress bar
+* file encryption status
+* upload success effects
+
+---
+
+## AI Processing Visualization
+
+Show live AI pipeline animation.
+
+Steps:
+
+* Reading Dataset
+* Profiling
+* Cleaning
+* Detecting Anomalies
+* Generating Dashboard
+* Calculating Risk
+
+Use animated nodes and flowing lines.
+
+---
+
+## Analytics Dashboard
+
+Include advanced charts:
+
+* line charts
+* bar charts
+* pie charts
+* heatmaps
+* scatter plots
+* forecasting graphs
+
+All charts animated.
+
+Use Plotly-like styling.
+
+---
+
+## Security Risk Center
+
+MOST IMPORTANT MODULE.
+
+Show:
+
+* overall risk score
+* threat indicators
+* anomaly alerts
+* PII detection
+* suspicious activity logs
+* AI recommendations
+
+Use:
+
+* radar charts
+* circular progress meters
+* glowing warning indicators
+* cybersecurity visuals
+
+Add live alert animations.
+
+---
+
+## AI Chat Assistant
+
+Modern AI chatbot panel.
+
+Features:
+
+* typing animation
+* prompt suggestions
+* SQL generation preview
+* conversational UI
+* voice input button
+* AI thinking loader
+
+Example query:
+
+“Show average salary department wise”
+
+AI returns:
+
+* chart
+* insight
+* generated SQL
+* summary
+
+---
+
+## Forecasting Module
+
+Show future trend predictions.
+
+Include:
+
+* animated trend graph
+* prediction confidence
+* AI explanation panel
+* date range selector
+
+---
+
+## Team Collaboration
+
+Enterprise workspace UI.
+
+Include:
+
+* active users
+* team permissions
+* comments
+* shared dashboards
+* audit logs
+
+---
+
+# 4. SECURITY CENTER PAGE
+
+Create a dedicated cybersecurity UI.
+
+Must look like:
+
+* CrowdStrike
+* SentinelOne
+* Splunk
+
+Include:
+
+* live threat feed
+* attack map
+* security score
+* encryption status
+* suspicious activities
+* AI threat insights
+* risk heatmaps
+
+Use:
+
+* red alerts
+* neon cyber visuals
+* holographic elements
+
+---
+
+# 5. REPORTS PAGE
+
+Modern reporting interface.
+
+Include:
+
+* downloadable PDF reports
+* AI-generated summaries
+* export buttons
+* report templates
+* charts preview
+
+---
+
+# 6. SETTINGS PAGE
+
+Include:
+
+* profile settings
+* MFA controls
+* API keys
+* role management
+* integrations
+* notification preferences
+
+---
+
+# MOBILE RESPONSIVENESS
+
+Frontend must be PERFECTLY responsive.
+
+Mobile UI should feel like:
+
+* premium SaaS app
+* smooth mobile dashboard
+* touch optimized
+
+---
+
+# UX REQUIREMENTS
+
+The UX must feel:
+
+* extremely polished
+* modern
+* intuitive
+* enterprise-level
+* addictive to use
+
+Avoid clutter.
+
+Perfect spacing.
+
+Perfect alignment.
+
+Professional hierarchy.
+
+---
+
+# ADVANCED UI DETAILS
+
+Add all these small details:
+
+* animated cursor glow
+* hover magnetic effects
+* loading skeletons
+* shimmer effects
+* AI pulse animation
+* smooth scrolling
+* floating navbar blur
+* glass reflections
+* subtle background motion
+* dynamic shadows
+* animated borders
+* futuristic toggle switches
+* smart empty states
+* interactive onboarding
+* animated notifications
+* live activity feed
+* glowing graph animations
+* real-time sync effects
+
+---
+
+# COMPONENTS TO INCLUDE
+
+Generate reusable React components for:
+
+* Sidebar
+* Navbar
+* AI Chat Widget
+* Upload Area
+* Risk Meter
+* Security Alert Card
+* Forecast Chart
+* Analytics Cards
+* Data Table
+* Team Panel
+* Notification Center
+* AI Loader
+* Interactive Graphs
+
+---
+
+# FINAL REQUIREMENTS
+
+This frontend must look:
+
+* startup-funded
+* investor-ready
+* enterprise production-grade
+* visually breathtaking
+* technically sophisticated
+* AI-native
+* cybersecurity-focused
+
+The design should make users say:
+
+“This looks like a real billion-dollar AI platform.”
+
+Every section must feel premium.
+
+Every interaction must feel smooth.
+
+Every screen must feel alive.
+
+Generate the complete frontend UI in React JS with modern reusable architecture and advanced animations.

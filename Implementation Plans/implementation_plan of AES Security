@@ -1,0 +1,219 @@
+# AES-256 Data Encryption System — Implementation Plan
+
+## Background
+
+The Xplor security module already has a solid audit/monitoring layer
+(`audit_logger`, `event_formatter`, `security_monitor`, `security_settings`).
+The `encryption/` directory exists but `aes.py` and `key_manager.py` are empty stubs.
+
+This plan fills the entire encryption layer from scratch, integrates cleanly with
+the existing audit logger, and matches the coding style already established in the project.
+
+---
+
+## Proposed Changes
+
+### encryption/ — 5 Core Modules
+
+---
+
+#### [MODIFY] [aes.py](file:///f:/University%20Work/04_Semester/Semester%20Project/Xplor/security/encryption/aes.py)
+
+The main cryptographic engine. Implements AES-256-GCM (authenticated encryption).
+
+Key design decisions:
+- **AES-256-GCM** chosen over CBC because it provides confidentiality **and** integrity in one primitive — no need for a separate HMAC.
+- Every encrypt call generates a fresh 12-byte random IV (nonce). No IV reuse ever.
+- The 16-byte GCM authentication tag is appended to the ciphertext and verified on decryption — tampered files are caught automatically.
+- Wire format stored in encrypted files: `IV (12 bytes) || TAG (16 bytes) || CIPHERTEXT (N bytes)`.
+- Public API: `encrypt_text()`, `decrypt_text()`, `encrypt_bytes()`, `decrypt_bytes()`.
+- All failures raise `EncryptionError` or `DecryptionError` — never expose raw cryptographic exceptions to callers.
+
+---
+
+#### [MODIFY] [key_manager.py](file:///f:/University%20Work/04_Semester/Semester%20Project/Xplor/security/encryption/key_manager.py)
+
+Handles all key lifecycle operations. Callers never touch raw key bytes directly.
+
+Key design decisions:
+- Keys are 32 bytes (256 bits) of `os.urandom()` — no PRNG shortcuts.
+- Keys are stored as Base64-encoded strings in `.env` / key files.
+- `load_key()` accepts: environment variable → key file → auto-generate (dev fallback).
+- Key validation rejects anything that isn't exactly 32 bytes after decode.
+- `rotate_key()` archives the old key with a timestamp suffix before writing the new one.
+- Public API: `generate_key()`, `save_key()`, `load_key()`, `validate_key()`, `rotate_key()`, `get_key()`.
+
+---
+
+#### [NEW] [file_encryptor.py](file:///f:/University%20Work/04_Semester/Semester%20Project/Xplor/security/encryption/file_encryptor.py)
+
+Handles whole-file encrypt/decrypt with storage path management.
+
+Key design decisions:
+- Encrypted files get `.enc` extension appended.
+- Plaintext source file is **optionally deleted** after encryption (secure_delete=True by default in production, False in tests).
+- `encrypt_file(src)` → writes to `storage/encrypted/<category>/` and returns the `.enc` path.
+- `decrypt_file(enc_path)` → writes to `storage/decrypted_temp/` and returns temp path.
+- Supports chunked reading for large files (avoids loading full dataset into RAM).
+- Category routing: `datasets/`, `reports/`, `temporary/`.
+
+---
+
+#### [NEW] [integrity.py](file:///f:/University%20Work/04_Semester/Semester%20Project/Xplor/security/encryption/integrity.py)
+
+Standalone integrity verification utilities.
+
+Key design decisions:
+- `hash_file()` — SHA-256 hash of a file's raw bytes, returned as hex string.
+- `verify_file_hash()` — compares stored hash against freshly computed hash.
+- `validate_encrypted_file()` — checks minimum size (at least IV + TAG bytes present), confirms header magic bytes.
+- These are supplemental to GCM's built-in tag verification — useful for pre-decryption sanity checks.
+
+---
+
+#### [NEW] [secure_storage.py](file:///f:/University%20Work/04_Semester/Semester%20Project/Xplor/security/encryption/secure_storage.py)
+
+High-level orchestrator that combines encryption + audit logging into one call.
+
+Key design decisions:
+- `store_dataset(path)` — encrypts and logs `encryption_success`.
+- `retrieve_dataset(enc_path)` — decrypts and logs `decryption_success`.
+- `cleanup_temp_files()` — securely wipes `storage/decrypted_temp/`.
+- All operations write to the **existing** `AuditLogger` (from `guards/audit_logger.py`) using `log_system_event()`.
+- This is the module that application code calls — it never calls `aes.py` directly.
+
+---
+
+### storage/ — Directory Scaffold
+
+```
+security/storage/
+├── encrypted/
+│   ├── datasets/
+│   ├── reports/
+│   └── temporary/
+├── decrypted_temp/
+└── keys/
+```
+
+Created by `secure_storage.py` at import time using `mkdir(parents=True, exist_ok=True)`.
+`.gitkeep` files placed in each leaf so the structure is tracked in version control.
+
+---
+
+### configs/security_settings.py — Extension
+
+#### [MODIFY] [security_settings.py](file:///f:/University%20Work/04_Semester/Semester%20Project/Xplor/security/configs/security_settings.py)
+
+Add an `EncryptionConfig` block at the bottom of the existing file:
+
+```python
+class EncryptionConfig:
+    ALGORITHM          = "AES-256-GCM"
+    KEY_SIZE_BYTES     = 32          # 256 bits
+    IV_SIZE_BYTES      = 12          # GCM nonce
+    TAG_SIZE_BYTES     = 16          # GCM auth tag
+    MAX_FILE_SIZE_MB   = 500
+    ENV_KEY_NAME       = "XPLOR_ENCRYPTION_KEY"
+    KEY_FILE_NAME      = "master.key"
+    ENCRYPTED_EXT      = ".enc"
+    TEMP_FILE_LIFETIME = 3600        # seconds — temp files older than this are wiped
+
+# Encryption storage paths
+STORAGE_DIR          = SECURITY_DIR / "storage"
+ENCRYPTED_DIR        = STORAGE_DIR / "encrypted"
+ENCRYPTED_DATASETS   = ENCRYPTED_DIR / "datasets"
+ENCRYPTED_REPORTS    = ENCRYPTED_DIR / "reports"
+ENCRYPTED_TEMPORARY  = ENCRYPTED_DIR / "temporary"
+DECRYPTED_TEMP_DIR   = STORAGE_DIR / "decrypted_temp"
+KEYS_DIR             = STORAGE_DIR / "keys"
+```
+
+Also add new `EventType` values for encryption events:
+```python
+ENCRYPTION_SUCCESS  = "encryption_success"
+DECRYPTION_SUCCESS  = "decryption_success"
+DECRYPTION_FAILED   = "decryption_failed"
+INTEGRITY_VIOLATION = "integrity_violation"
+KEY_ROTATION        = "key_rotation"
+```
+
+---
+
+### tests/ — 3 Test Files
+
+#### [MODIFY] [test_encryption.py](file:///f:/University%20Work/04_Semester/Semester%20Project/Xplor/security/tests/test_encryption.py)
+
+Full test suite for `aes.py` and `integrity.py`:
+- encrypt/decrypt round-trip (text, bytes, binary)
+- tampered ciphertext raises `DecryptionError`
+- wrong key raises `DecryptionError`
+- different IVs produced each call
+- `validate_encrypted_file()` rejects truncated data
+
+#### [NEW] [test_key_manager.py](file:///f:/University%20Work/04_Semester/Semester%20Project/Xplor/security/tests/test_key_manager.py)
+
+Full test suite for `key_manager.py`:
+- `generate_key()` produces exactly 32 bytes
+- `save_key()` / `load_key()` round-trip
+- `validate_key()` rejects short / wrong-type keys
+- `load_key()` reads from env var when set
+- `rotate_key()` archives old key correctly
+
+#### [NEW] [test_file_encryptor.py](file:///f:/University%20Work/04_Semester/Semester%20Project/Xplor/security/tests/test_file_encryptor.py)
+
+Full test suite for `file_encryptor.py` and `secure_storage.py`:
+- CSV file encrypts and decrypts correctly
+- JSON file encrypts and decrypts correctly
+- Binary file (simulated) handles correctly
+- `.enc` file is unreadable as plaintext
+- `cleanup_temp_files()` removes temp files
+
+---
+
+### docs/ — 3 Documentation Files
+
+#### [NEW] encryption_architecture.md
+System overview, pipeline diagram, wire format specification.
+
+#### [NEW] key_management.md
+Key generation, storage, loading, rotation procedures.
+
+#### [NEW] secure_storage.md
+Storage directory layout, workflow examples, cleanup procedures.
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Dependency:** The system needs `cryptography` (PyCA) installed. It may already be present given the existing TLS config module. I will check and add to `requirements.txt` if needed.
+
+> [!NOTE]
+> **`.env` file:** The key manager supports loading from `XPLOR_ENCRYPTION_KEY` env var. An `.env.example` already exists in the security root — I will add the new variable there without creating a real `.env`.
+
+> [!NOTE]
+> **Existing `tls_config.py`:** I will read it to avoid duplicating any key-loading logic already present.
+
+---
+
+## Verification Plan
+
+### Automated
+```
+cd security
+python tests/test_encryption.py
+python tests/test_key_manager.py
+python tests/test_file_encryptor.py
+```
+
+All three test runners print a `PASS/FAIL` summary in the same style as existing tests.
+
+### Module self-tests
+```
+python encryption/aes.py
+python encryption/key_manager.py
+python encryption/secure_storage.py
+```
+
+Each module has an `if __name__ == "__main__"` self-test block identical in style to `audit_logger.py`.
